@@ -55,6 +55,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+//  Get user's gigs (freelancer only)
+router.get('/user/my-gigs', authenticateToken, requireRole(['freelancer']), async (req, res) => {
+  try {
+    const gigs = await Gig.find({ freelancer: req.user._id })
+      .sort({ createdAt: -1 });
+    
+    res.json(gigs);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error fetching user gigs',
+      error: error.message
+    });
+  }
+});
+
 // Get single gig
 router.get('/:id', async (req, res) => {
   try {
